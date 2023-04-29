@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>circlejerk</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+</script>
+<style>
+div.redCircle, div.blueCircle, div.greenCircle, div.yellowCircle, div.blackCircle, div.purpleCircle, div.orangeCircle {
+width: 100px;
+height: 100px;
+background-color: red;
+-moz-border-radius: 50px;
+-webkit-border-radius: 50px;
+border-radius: 50px;
+position: fixed;
+}
+
+div.blueCircle {
+background-color: blue;
+}
+div.greenCircle {
+background-color: green;
+}
+div.orangeCircle {
+background-color: orange;
+}
+div.yellowCircle {
+background-color: yellow;
+}
+div.blackCircle {
+background-color: black;
+}
+div.purpleCircle {
+background-color: purple;
+}
+
+#top, #bottom, #left, #right {
+	background: #C0C0C0;
+	position: fixed;
+	}
+#left, #right {
+	top:0; bottom: 0;
+	width: 15px;
+	}
+#left {left:0;}
+#right {right:0;}
+
+#top, #bottom{
+	left:0; right:0;
+	}
+#top {
+	top: 0;
+	height: 15px;
+	}
+#bottom {
+	bottom: 0; 
+	height: 50px;
+	width: 100%;
+	text-align: center;
+	}
+#contentWrapper {
+	padding:20px;
+	}
+#playButtonWrapper {
+	display: inline-block;
+	height: 50px;
+	bottom: 0;
+	padding: 15px;
+	margin: 0 auto;
+	width: 50px;
+	}
+#timerDivWrapper {
+	display: inline-block;
+	width: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 30px;
+	bottom: 0;
+	background-color: white;
+	border: solid;
+	font-size: 25px;
+	text-align: center;
+	margin: 0 auto;
+	font-family: Courier New;
+	font-weight: bold;	
+	}
+	
+#scoreBoardDiv {
+	display: inline-block;
+	width: 100px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 30px;
+	bottom: 0;
+	background-color: white;
+	border: solid;
+	font-size: 25px;
+	text-align: center;
+	margin: 0 auto;
+	font-family: Courier New;
+	font-weight: bold;
+	}
+	
+#stopButtonWrapper {
+	display: inline-block;
+	height: 50px;
+	bottom: 0;
+	padding: 15px;
+	margin: 0 auto;
+	width: 60px;
+	}
+	
+#centerMessageDiv {
+	position: absolute;
+	width: 300px;
+	height: 200px;
+	z-index:15;
+	top: 50%;
+	left: 50%;
+	margin: -100px 0 0 -150px;
+	background: #D0D0D0;
+	text-align: center;
+	border: 7px solid #808080;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding: 10px;
+	}
+.hiddenDiv {
+	display: none;
+	}
+.levelTwoClass {
+	background-image: url("http://www.webweaver.nu/clipart/img/web/backgrounds/animated/starry-sky.gif");
+	}
+.levelThreeClass {
+	background-image: url("https://community.wolfram.com/c/portal/getImageAttachment?filename=dots17c.gif&userId=610054");
+	}
+</style>
+<script type="text/javascript">
+//original level count
+var levelCount = 1;
+//original score value
+var score = 0;
+
+//Timer code
+paused = false;
+//set minutes
+var mins = 2;
+//calculate the seconds
+var secs = mins * 60;
+
+//declaring t variable to be used in code
+var t = 0;
+var flagTimer='resume';
+//so these variables are set above.
+
+//this is the function calling all the timer code. 
+function startTimer() {
+	countDown()
+	$("#centerMessageDiv").addClass("hiddenDiv");
+	}; //end startTimer
+	
+//this is the countdown. It uses the setTimeout method and calls the decrement function
+function countDown() {
+	t = setTimeout('Decrement()', 1000); //you're going to run the decrement function once a second
+	}; //end countDown
+
+//This is the function called by the countdown	
+function Decrement() {
+	if (document.getElementById) { //this is true
+		minutes = document.getElementById("minutes"); //minutes is the body div minutes
+		seconds = document.getElementById("seconds"); //seconds is the body div seconds
+		//if less than a minute remaining
+		if (seconds < 59) {
+			seconds.value = secs; //then seconds is secs
+		} else {
+			minutes.value = getMinutes();
+			seconds.value = getSeconds();
+		}
+		secs--; //secs is itself minus one
+		t = setTimeout('Decrement()', 1000); //t is the setTimeout method with the decrement function and 1000 seconds
+	}; //end of decrement
+
+if (mins > 0 & secs > 0) { //while the timer is running
+	$("#startButton").prop('disabled', true); //the start button is disabled
+	$("#Pause").prop('disabled', false); //and the pause button is enabled
+	};
+	
+	if (mins == 0 & secs < 0) { //if the timer is done
+	clearInterval(t);
+	//above code ends counter
+	alert("Game over\nBonus points: 0");
+	//stop the animations
+	$("body *").filter(":animated").stop(); //this stops all animations in the body
+	//reset the value of mins and secs for the next buttonclick
+	mins = 2;
+	secs = mins * 60;
+	//and reverse which buttons are disabled
+	$("#startButton").prop('disabled', false);
+	$("#Pause").prop('disabled', true);
+	//and here something to un-hide and un-stop the animations
+	//setting up switch statement to correctly hide and show divs by level
+	switch(levelCount)
+		{
+		case 1: $(".redCircle").show(); //level one, basic
+				$(".greenCircle").show();
+				$(".blackCircle").show();
+				$(".orangeCircle").show();
+				$(".blueCircle").show();
+				$(".purpleCircle").show();
+				$(".yellowCircle").show();
+				$("#centerMessageDiv").removeClass("hiddenDiv"); //remove invisible class
+			break;
+		case 2: $(".redCircle").show();
+				$(".greenCircle").show();
+				$(".blackCircle").show();
+				$(".orangeCircle").show();
+				$(".blueCircle").show();
+				$(".purpleCircle").show();
+				$(".yellowCircle").show();
+				//here, at end of level 2 you innerHTML the new div css to show on level 3 play
+				var lvl3CssUpdate = document.getElementsByClassName("lvl3RedCircle"); //success!! This was the glitch!
+				lvl3CssUpdate[0].innerHTML="<style>div.lvl3RedCircle {width: 100px; height: 100px; background-color: red; -moz-border-radius: 50px; -webkit-border-radius:50px; border-radius: 50px; position: fixed; background-color: red;}</style>";
+				//http://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_document_getelementsbyclassname here, tip here
+				$("#centerMessageDiv").removeClass("hiddenDiv"); //remove invisible class
+			break;
+		case 3: $(".redCircle").show();
+				$(".greenCircle").show();
+				$(".blackCircle").show();
+				$(".orangeCircle").show();
+				$(".blueCircle").show();
+				$(".purpleCircle").show();
+				$(".yellowCircle").show();
+				//add that you reveal the new div that was clicked this level
+				$(".lvl3RedCircle").show();
+				$("#centerMessageDiv").removeClass("hiddenDiv"); //remove invisible class
+		default:$(".redCircle").show(); //for now after level three
+				$(".greenCircle").show();
+				$(".blackCircle").show();
+				$(".orangeCircle").show();
+				$(".blueCircle").show();
+				$(".purpleCircle").show();
+				$(".yellowCircle").show();
+				$(".lvl3RedCircle").show();
+				//added the level 3 redCircle here
+				$("#centerMessageDiv").removeClass("hiddenDiv"); //remove invisible class
+		}; //closing switch statement
+	
+	//update level count
+		levelCount = levelCount + 1;
+		console.log("Level count is " + levelCount);
+	// switch statement for what displays on the center div depending on what level it is
+	switch (levelCount)
+		{
+		case 2: document.getElementById("centerMessageDiv").innerHTML="<b>Level 2</b><hr><span align='left'>Good evening.";
+			break;
+		case 3: document.getElementById("centerMessageDiv").innerHTML="Level " + levelCount + "<hr><span align='left'>Faster?";
+			break;
+		case 4: document.getElementById("centerMessageDiv").innerHTML="Level " + levelCount + "<hr><span align='left'>I dunno level 4 yet.";
+			break;
+		default: document.getElementById("centerMessageDiv").innerHTML="Level " + levelCount + "<hr><span align='left'>Something something something description.";
+		}; //closing switch statement		
+	//and sort out how to put all the circles back to start at the top left corner, though that isn't necessary yet
+	};
+
+
+}; //is this needed?
+function getMinutes() {
+	//minutes is seconds divided by 60, rounded down
+	mins = Math.floor(secs/60);
+	return mins;
+	}; //end getMinutes
+function getSeconds() {
+	//take mins remaining (as seconds) away from total seconds remaining
+	return secs-Math.round(mins * 60);
+	}; //end getSeconds
+function pause() { //pause button function
+	if (flagTimer=='resume') {
+		clearTimeout(t); //stop the timer
+		t=0; //change value of t during timeout
+		document.getElementById('Pause').value="Resume"; //new word on button
+		flagTimer='pause'; //change value of timer
+	} else {
+		flagTimer="resume"; //change value of timer back
+		document.getElementById('Pause').value="Pause"; //new word on button
+		resume(); //resume countdown with resume function
+	}; //end of pause function
+function resume() {
+	t = setTimeout('Decrement()', 1000); //and back to the countdown, with the min and sec values still what they were 
+	}; //end of resume function
+}; //this?
+
+//animation functions
+
+function startAnimationButton() {
+//so just trying wrapping all this in one function
+
+$(document).ready(function(){
+	$("div[name=animate]").each(function(){
+    animateDiv($(this));
+    });
+});
+
+function makeNewPosition(){
+    
+    // Get viewport dimensions (remove the dimension of the div)
+    var h = $(window).height() - 50;
+    var w = $(window).width() - 50;
+    
+    var nh = Math.floor(Math.random() * h);
+    var nw = Math.floor(Math.random() * w);
+    
+    return [nh,nw];    
+    
+}
+
+function animateDiv(purpleCircle){
+    var newq = makeNewPosition();
+    var oldq = $(purpleCircle).offset();
+    var speed = calcSpeed([oldq.top, oldq.left], newq);
+    
+    $(purpleCircle).animate({ top: newq[0], left: newq[1] }, speed, function(){
+      animateDiv(purpleCircle);        
+    });
+    
+};
+
+function calcSpeed(prev, next) {
+    
+    var x = Math.abs(prev[1] - next[1]);
+    var y = Math.abs(prev[0] - next[0]);
+    
+    var greatest = x > y ? x : y;
+    
+    var speedModifier = 0.1;
+
+    var speed = Math.ceil(greatest/speedModifier);
+
+    return speed;
+
+};
+
+}; //ending startAnimationButton function
+
+/*okay, here you're working on the level 3 animation. I just pasted in the original goop for one div from this jsfiddle 
+http://jsfiddle.net/Xw29r/15/
+Then you're going to modify it to fit and try it like that, I already upped the speed.
+*/
+function startLvl3Animation() {
+//so just trying wrapping all this in one function
+
+$(document).ready(function(){
+    animateDivlvl3();
+    
+}); //did I do this right?
+
+function makeNewPositionlvl3(){
+    
+    // Get viewport dimensions (remove the dimension of the div)
+    var h3 = $(window).height() - 50;
+    var w3 = $(window).width() - 50;
+    
+    var nh3 = Math.floor(Math.random() * h3);
+    var nw3 = Math.floor(Math.random() * w3);
+    
+    return [nh3,nw3];    
+    
+}
+
+function animateDivlvl3(){
+    var newq3 = makeNewPositionlvl3();
+    var oldq3 = $('.lvl3RedCircle').offset();
+    var speed3 = calcSpeedlvl3([oldq3.top, oldq3.left], newq3);
+    
+    $('.lvl3RedCircle').animate({ top: newq3[0], left: newq3[1] }, speed3, function(){
+      animateDivlvl3();        
+    });
+    
+};
+
+function calcSpeedlvl3(prev3, next3) {
+    
+    var x3 = Math.abs(prev3[1] - next3[1]);
+    var y3 = Math.abs(prev3[0] - next3[0]);
+    
+    var greatest3 = x3 > y3 ? x3 : y3;
+    
+    var speedModifier3 = 0.8; 
+
+    var speed3 = Math.ceil(greatest3/speedModifier3);
+
+    return speed3;
+
+}
+};
+	
+//stopping animation function
+function toggleAnimationButton() {
+$("#stopCircles").toggle(); //This doesn't stop the animations from moving, it just makes them invisible.
+};
+
+//this is a function to attach to the play button to call both animation and timer on button click
+function playTimerAndAnimation() {
+	switch (levelCount)
+		{
+		case 1: startAnimationButton() //call animation
+				startTimer(); //call timer
+			break;
+		case 2: $('body').addClass('levelTwoClass'); //new background img by changing class
+				startAnimationButton();
+				startTimer();
+				console.log("The switch statement in the playTimerAndAnimation function worked. You are on level " + levelCount);
+			break;
+		case 3: $('body').removeClass('levelTwoClass'); //removing old background
+				$('body').addClass('levelThreeClass'); //adding new background
+				startAnimationButton();
+				startTimer();
+				startLvl3Animation(); //animate code for new div
+				console.log("The switch statement in the playTimerAndAnimation function worked. You are on level " + levelCount);
+			break;
+		default:startAnimationButton(); 
+				startTimer();
+				//put in lvl3Animation for now once it is working
+				startLvl3Animation();
+				console.log("The switch statement in the playTimerAndAnimation function worked. You are on level " + levelCount);
+		}; //closing switch statement
+	}; //close PlayTimerAndAnimation
+
+//this is a function to attach to the pause button to call both animation and timer on button click
+function pauseTimerAndAnimation() {
+	toggleAnimationButton();
+	pause();
+	};
+
+//below are the click event functions for the different divs. Did each one separate
+
+//redCircle
+function redClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".redCircle").stop(); //this makes it stop
+		$(".redCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+
+//greenCircle
+function greenClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".greenCircle").stop(); //this makes it stop
+		$(".greenCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+	
+//yellowCircle
+function yellowClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".yellowCircle").stop(); //this makes it stop
+		$(".yellowCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+	
+//blackCircle
+function blackClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".blackCircle").stop(); //this makes it stop
+		$(".blackCircle" ).hide(); //this makes it vanish
+		if (levelCount == 2) { //you'll change this when you add a level three
+			alert("Bonus 10\nYou got the black circle");
+			score = score + 10; //add bonus to score
+			document.getElementById("scoreBoardDiv").innerHTML = score //put new total on the scoreboard
+			};
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+	
+//orangeCircle
+function orangeClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".orangeCircle").stop(); //this makes it stop
+		$(".orangeCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+	
+//blueCircle
+function blueClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".blueCircle").stop(); //this makes it stop
+		$(".blueCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+	
+//purpleCircle
+function purpleClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".purpleCircle").stop(); //this makes it stop
+		$(".purpleCircle" ).hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign a point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	};
+
+//lvl3RedCircle
+function lvl3redClickedDiv() {
+	if ($(":animated").length > 0) { //so only runs during play
+		$(".lvl3RedCircle").stop(); //this makes it stop
+		$(".lvl3RedCircle").hide(); //this makes it vanish
+		allTargetsHit(); //check if all targets hit
+		score = score + 1; //to assign point
+		document.getElementById("scoreBoardDiv").innerHTML = score //put the total on the scoreboard
+		}; //end if statement
+	}; 
+	
+//if all circles clicked end timer and put up message -- HERE, LOOK FOR THE FUCK UP HERE
+function allTargetsHit() {
+if ($(":animated").length === 0) {
+	clearTimeout(t)//stop timer
+	//calculate bonus points
+	if (mins > 0) {
+		mins = mins * 60;
+		};
+	var bonusPoints = (mins + secs)/5;
+	score = score + bonusPoints;
+	score = Math.ceil(score);
+	bonusPoints = Math.ceil(bonusPoints); //for message
+	document.getElementById("scoreBoardDiv").innerHTML = score;
+	alert("Game over\nBonus points: " + bonusPoints);
+	//reset the value of mins and secs for the next buttonclick
+	mins = 2;
+	secs = mins * 60;
+	//and reverse which buttons are disabled
+	$("#startButton").prop('disabled', false);
+	$("#Pause").prop('disabled', true);
+	//and here something to un-hide and un-stop the animations
+	$(".redCircle" ).show();
+	$(".greenCircle").show();
+	$(".blackCircle").show();
+	$(".orangeCircle").show();
+	$(".blueCircle").show();
+	$(".purpleCircle").show();
+	$(".yellowCircle").show();	
+	//update level count
+	levelCount = levelCount + 1;
+	console.log("Level " + levelCount);	
+	$("#centerMessageDiv").removeClass("hiddenDiv"); //remove invisible class
+	//below puts up the next message on the div box that you just unhid		
+	// switch statement to change the message on the center message display div depending on level
+	switch (levelCount)
+		{
+		case 2: document.getElementById("centerMessageDiv").innerHTML="<b>Level 2</b><hr><span align='left'>Good evening.";
+			break;
+		case 3: document.getElementById("centerMessageDiv").innerHTML="Level " + levelCount + "<hr><span align='left'>Faster?";
+				var lvl3CssUpdate = document.getElementsByClassName("lvl3RedCircle"); //success!! This was the glitch!
+				lvl3CssUpdate[0].innerHTML="<style>div.lvl3RedCircle {width: 100px; height: 100px; background-color: red; -moz-border-radius: 50px; -webkit-border-radius:50px; border-radius: 50px; position: fixed; background-color: red;}</style>";
+			break;
+		default: document.getElementById("centerMessageDiv").innerHTML="Level " + levelCount + "<hr><span align='left'>Something something something description.";
+		}; //closing switch statement	
+	};
+	};
+
+</script>
+</head>
+<body>
+<div id="stopCircles"> <!--for toggle button to target-->
+<div class="redCircle" name="animate"></div>
+<div class="greenCircle" name="animate"></div>
+<div class="blueCircle" name="animate"></div>
+<div class="yellowCircle" name="animate"></div>
+<div class="blackCircle" name="animate"></div>
+<div class="orangeCircle" name="animate"></div>
+<div class="purpleCircle" name="animate"></div>
+<div class="lvl3RedCircle" name="lvl3Animate"></div>
+</div><!--end of stopCircles-->
+
+<div id="top"></div>
+<div id="centerMessageDiv">Level 1<hr>
+<span align="left">Click the circles to get rid of them before time runs out. You get a bonus for finishing early.
+</span>
+</div>
+<div id="bottom">
+<div id="stopButtonWrapper"><input type="button"; id="Pause" value="Pause" disabled></input>
+</div>
+<div id="timerDivWrapper">
+<div id="timer">
+<input id="minutes" style="width:24px; border:none; background-color:white; font-family:Courier New; font-weight:bold; font-size:20px;">:
+<input id="seconds" style="width: 26px; border:none; background-color:white; font-family:Courier New; font-weight:bold; font-size:20px;"/>
+</div>
+</div>
+<div id="scoreBoardDiv">00</div>
+<div id="playButtonWrapper"><button id="startButton";>Play</button>
+</div>
+</div>
+<div id="right"></div>
+<div id="left"></div>
+<br><br><br><br><br><br><br>
+<br><br><div style="padding-left: 50px;">
+CTRL-F5 to refresh for now.
+</div>
+<script type="text/javascript">
+//event listeners for everything
+/*
+template of javascript version of code I was using
+var pauseEL = document.getElementById("Pause");
+pauseEL.addEventListener("click", pauseTimerAndAnimation, false);
+*/
+//pause button listener ~ is id
+document.getElementById("Pause").addEventListener("click", pauseTimerAndAnimation);
+//play button listener ~ is id
+document.getElementById("startButton").addEventListener("click", playTimerAndAnimation);
+//purple circle listener ~ all circles are class
+//$(".purpleCircle").addEventListener("click", purpleClickedDiv, false);
+var purpleCircleEL = document.getElementsByClassName("purpleCircle"); 
+purpleCircleEL[0].addEventListener("click", purpleClickedDiv, false); 
+//green circle listener
+var greenCircleEL = document.getElementsByClassName("greenCircle");
+greenCircleEL[0].addEventListener("click", greenClickedDiv, false);
+//red circle listener
+var redCircleEL = document.getElementsByClassName("redCircle");
+redCircleEL[0].addEventListener("click", redClickedDiv, false);
+//black circle listener
+var blackCircleEL = document.getElementsByClassName("blackCircle");
+blackCircleEL[0].addEventListener("click", blackClickedDiv, false);
+//orange circle listeners
+var orangeCircleEL = document.getElementsByClassName("orangeCircle");
+orangeCircleEL[0].addEventListener("click", orangeClickedDiv, false);
+//yellow circle listener
+var yellowCircleEL = document.getElementsByClassName("yellowCircle");
+yellowCircleEL[0].addEventListener("click", yellowClickedDiv, false);
+//blue circle listener
+var blueCircleEL = document.getElementsByClassName("blueCircle");
+blueCircleEL[0].addEventListener("click", blueClickedDiv, false);
+//level 3 red circle listener
+var lvl3RedCircleEL = document.getElementsByClassName("lvl3RedCircle");
+lvl3RedCircleEL[0].addEventListener("click", lvl3redClickedDiv, false);
+</script>
+</body>
+</html>
